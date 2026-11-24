@@ -1,30 +1,3 @@
-const header = document.querySelector('[data-scroll]');
-const revealTargets = document.querySelectorAll('.section, .feature-image, .local-images figure, .plan-main, .data-block');
-revealTargets.forEach(el => el.setAttribute('data-reveal',''));
-const io = new IntersectionObserver(entries=>{
-  entries.forEach(entry=>{
-    if(entry.isIntersecting){ entry.target.classList.add('visible'); }
-  });
-},{threshold:.12});
-revealTargets.forEach(el=>io.observe(el));
-window.addEventListener('scroll',()=>{
-  header.classList.toggle('is-scrolled', window.scrollY > 40);
-});
+const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;document.documentElement.classList.add('js');const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');io.unobserve(e.target)}}),{threshold:.08});document.querySelectorAll('.reveal').forEach(e=>io.observe(e));const hero=document.querySelector('.hero');const toggle=()=>hero.classList.toggle('daytime');document.querySelector('#time').onclick=toggle;if(!reduced)setInterval(toggle,8500);let busy=false;function motion(){const y=scrollY;document.querySelector('header').classList.toggle('scrolled',y>45);document.querySelector('.progress').style.width=(100*y/Math.max(1,document.documentElement.scrollHeight-innerHeight))+'%';const local=document.querySelector('.local');if(!reduced){const r=local.getBoundingClientRect();local.querySelector('.parallax').style.transform=`translateY(${Math.max(-55,Math.min(55,(innerHeight/2-r.top-r.height/2)*.10))}px)`}busy=false}addEventListener('scroll',()=>{if(!busy){busy=true;requestAnimationFrame(motion)}},{passive:true});motion();const imgs=[...document.querySelectorAll('.slides img')];let index=0,paused=reduced;function show(n){index=(n+imgs.length)%imgs.length;imgs.forEach((im,i)=>im.classList.toggle('active',i===index));document.querySelector('#count').textContent=`0${index+1} / 04`}document.querySelector('#prev').onclick=()=>show(index-1);document.querySelector('#next').onclick=()=>show(index+1);const pause=document.querySelector('#pause');function sync(){pause.textContent=paused?'▶':'Ⅱ';pause.setAttribute('aria-label',paused?'自動切替を再開':'自動切替を停止')}sync();pause.onclick=()=>{paused=!paused;sync()};setInterval(()=>{if(!paused&&!document.hidden)show(index+1)},6500);const drawing=document.querySelector('#drawing');const names={floor1:'1階平面図',floor2:'2階平面図',floor3:'3階平面図',layout:'配置図',elevation:'立面図'};document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tabs button').forEach(x=>{x.classList.toggle('selected',x===b);x.setAttribute('aria-pressed',String(x===b))});drawing.src=`assets/images/${b.dataset.img}.webp`;drawing.alt=names[b.dataset.img]});const modal=document.querySelector('#modal');document.querySelector('#zoom').onclick=()=>{const large=document.querySelector('#large');large.src=drawing.src;large.alt=drawing.alt;modal.showModal()};document.querySelector('#close').onclick=()=>modal.close();modal.onclick=e=>{if(e.target===modal)modal.close()};
 
-// Subtle parallax / premium motion
-const heroBg = document.querySelector('.hero-bg');
-let ticking = false;
-function updateMotion(){
-  const y = window.scrollY || 0;
-  if(heroBg){
-    const offset = Math.min(44, y * 0.035);
-    heroBg.style.setProperty('--scrollShift', offset + 'px');
-  }
-  ticking = false;
-}
-window.addEventListener('scroll',()=>{
-  if(!ticking){
-    requestAnimationFrame(updateMotion);
-    ticking = true;
-  }
-},{passive:true});
+const threads=[...document.querySelectorAll('.thread-band')];threads.forEach(b=>b.querySelectorAll('path').forEach(p=>p.setAttribute('pathLength','1')));function weave(){if(reduced)return;threads.forEach(b=>{const r=b.getBoundingClientRect();const t=Math.max(0,Math.min(1,(innerHeight-r.top)/(innerHeight*.65+r.height*.25)));b.querySelectorAll('path').forEach((p,i)=>{p.style.strokeDashoffset=String(1-Math.max(0,Math.min(1,t*1.25-i*.1)))})})}let weaving=false;addEventListener('scroll',()=>{if(!weaving){weaving=true;requestAnimationFrame(()=>{weave();weaving=false})}},{passive:true});addEventListener('resize',weave);weave();
